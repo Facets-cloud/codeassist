@@ -1,5 +1,6 @@
 from swarm import Agent
 import os
+import fnmatch  # Import the fnmatch module
 
 class CodeAssistant:
     def __init__(self):
@@ -18,7 +19,7 @@ class CodeAssistant:
             return []
 
         # Read and parse .gitignore
-        gitignore_path = os.path.join(self.base_path, '.gitignore')
+        gitignore_path = os.path.join(self.base_path, '../.gitignore')
         ignore_patterns = []
         if os.path.exists(gitignore_path):
             with open(gitignore_path, 'r') as file:
@@ -26,7 +27,7 @@ class CodeAssistant:
 
         # List all files and filter out ignored ones
         files = os.listdir(dir_path)
-        filtered_files = [f for f in files if not any(os.path.fnmatch.fnmatch(f, pattern) for pattern in ignore_patterns)]
+        filtered_files = [f for f in files if not any(fnmatch.fnmatch(f, pattern) for pattern in ignore_patterns)]
 
         print(f"Files in {dir_path} (filtered): {filtered_files}")
         return filtered_files
@@ -54,17 +55,3 @@ class CodeAssistant:
         except Exception as e:
             print(f"Error writing to {file_path}: {e}")
             return "Error"
-
-# Coding Assistant Agent
-coding_assistant_agent = Agent(
-    name="Coding Assistant",
-    instructions=(
-        "The Coding Assistant is designed to help users write code efficiently. "
-        "It starts by asking the user for the base path for the code. If the user does not provide one, the default is the current directory. "
-        "Once the base path is set, the assistant will wait for the user's instructions and, based on the instructions, will list files, read files, or write files to complete the task. "
-        "Do not only suggest changes in console but ask user if they want you to edit the files and do that"
-        "If there are too many directories or files, the assistant will ask the user for guidance on where to look for the relevant content."
-    ),
-    functions=[CodeAssistant().set_base_path, CodeAssistant().list_files, CodeAssistant().read_file, CodeAssistant().write_file]
-)
-

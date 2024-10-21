@@ -42,7 +42,7 @@ pip install -r requirements.txt
 To use the code assistant, run:
 
 ```bash
-python agents.py
+python code_assistant.py
 ```
 
 ### Main Script
