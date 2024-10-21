@@ -1,0 +1,28 @@
+all_agents.py: 'The `all_agents.py` file defines three primary agents: Triage Agent,
+  Coding Assistant Agent, and Git Assistant Agent. Each agent is responsible for specific
+  tasks within the system:
+
+
+  1. **Triage Agent**: Manages the overall workflow by determining the appropriate
+  agent for handling different user requests. It prompts the user to configure the
+  base path for the assistants as a first step.
+
+
+  2. **Coding Assistant Agent**: Focuses on tasks related to code management, including
+  reading and updating context in files, searching codebase, and other coding activities.
+  If a Git-related task arises, it refers the task to the Git Assistant.
+
+
+  3. **Git Assistant Agent**: Handles Git operations like checking status, staging,
+  committing, and pushing changes. For non-Git-related operations, it redirects to
+  the Triage agent.
+
+
+  The file also contains functions to transfer control between these agents as needed.'
+tools/git_assistant.py: The `git_assistant.py` file includes a `GitAssistant` class
+  that provides methods for executing common Git commands like status, diff, commit,
+  add, and push. It uses Python's logging module instead of print statements to log
+  information, errors, and operation results. Each git operation is executed within
+  the specified base path using the subprocess module. The `update_requirements` method
+  updates the `requirements.txt` to ensure needed packages are listed, though it appears
+  no new external requirements are added at the moment.

@@ -2,6 +2,20 @@ from swarm.repl import run_demo_loop
 from all_agents import triage_agent
 from swarm import Swarm
 import json
+import logging
+
+# Set up logging to file only
+log_file = 'app.log'  # Specify your log file path
+# Add a file handler
+file_handler = logging.FileHandler(log_file)
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+
+# Get the root logger, clear existing handlers, and add the file handler
+logger = logging.getLogger()
+logger.handlers.clear()  # Clear existing handlers to prevent console logging
+logger.addHandler(file_handler)
+
 
 def process_and_print_streaming_response(response):
     content = ""

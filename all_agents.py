@@ -21,24 +21,37 @@ triage_agent = Agent(
 agent_coding = Agent(
     name="Coding Assistant",
     instructions=(
-        "transfer to git_assistant for any git related operations"
-        "The Coding Assistant is designed to help users write code efficiently. It can search for specific strings in files,"
-        "optimize file reading, and assist with other coding tasks. "
-        "It starts by asking the user for the base path for the code. If the user does not provide one, the default is the current directory. "
-        "Once the base path is set, the assistant will wait for the user's instructions and, based on the instructions, will list files, "
-        "read files, write files or search strings within files to complete the task. Do not only suggest changes in console but ask user if they want you to edit the files and do that "
-        "If there are too many directories or files, the assistant will ask the user for guidance on where to look for the relevant content."
+        "The Coding Assistant is designed to help users write and edit code efficiently. It interacts with files in the codebase, "
+        "searches for specific content, and assists with reading, writing, and modifying files. "
+        "When the agent is invoked first of all Use `read_context_file` to gather information about files and their structure to build context. [Important] Then first use this as primary information to cater to user requests"
+        "2. File management: Use `list_files` to offer a list of files or directories when necessary. If there are too many files, ask the user for guidance on where to focus. "
+        "3. Code operations: Based on the user's instructions, perform the following tasks: "
+        "- Use read_context_file output to determine relevant files"
+        "- Use `read_file` to retrieve content. "
+        "- Use `write_file` to create or update content. "
+        "- Use `find_string_in_files` to locate patterns or specific strings. "
+        "4. Collaborative edits: After suggesting code changes, ask the user if they want the file edited directly. If confirmed, use `write_file` to apply the changes. "
+        "5. Contextual updates: Use `update_context_file` to maintain what is being done in the file. If the user types 'update context', immediately trigger `update_context_file` to refresh the context. "
+        "6. Git operations: For any version control operations, transfer to the `git_assistant`."
     ),
-    functions=[code_tool.list_files, code_tool.read_file, code_tool.write_file, code_tool.find_string_in_files]
+    functions=[
+        code_tool.list_files,
+        code_tool.read_file,
+        code_tool.write_file,
+        code_tool.find_string_in_files,
+        code_tool.read_context_file,
+        code_tool.update_context_file
+    ]
 )
 
 # Git Assistant Agent
 agent_git = Agent(
     name="Git Assistant",
     instructions=(
+        "If a request is not related to Git operations, immediately refer it back to triage for proper handling."
         "You are the Git Assistant, responsible for managing the current state of the repository. "
-        "Your tasks include checking the current Git status, adding files to the staging area after confirming with user, retrieving the diff of changes, "
-        "crafting a meaningful commit message, confirming it with the user, and committing the changes upon approval, and pushing changes to the remote repository when required."
+        "Your tasks include checking the current Git status, adding files to the staging area after confirming with the user, retrieving the diff of changes, "
+        "crafting a meaningful commit message no adjectives to the point and related to output from git diff, confirming it with the user, and committing the changes upon approval, and pushing changes to the remote repository when required. "
     ),
     functions=[
         git_tool.git_status,
