@@ -19,6 +19,13 @@ all_agents.py: 'The `all_agents.py` file defines three primary agents: Triage Ag
 
 
   The file also contains functions to transfer control between these agents as needed.'
+run.py: The `run.py` file initializes and runs a command line interface for the Swarm
+  application. It sets up logging to record messages in a log file (`app.log`), defines
+  functions to process and print streaming responses, and manages the interaction
+  loop with the user. The primary function, `run_demo_loop`, executes the simulated
+  client-server communication using a given starting agent, handling user input and
+  agent responses until the application exits. It defaults to using a `triage_agent`
+  as the starting agent when run as a standalone script.
 tools/git_assistant.py: The `git_assistant.py` file includes a `GitAssistant` class
   that provides methods for executing common Git commands like status, diff, commit,
   add, and push. It uses Python's logging module instead of print statements to log
