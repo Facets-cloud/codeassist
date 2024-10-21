@@ -30,6 +30,13 @@ class GitAssistant:
         result = subprocess.run(["git", "commit", "-m", message], cwd=self.base_path, capture_output=True, text=True)
         return result.stdout if result.returncode == 0 else result.stderr
 
+    def git_add(self, files=[]):
+        """Executes git add for the specified list of files. If no file is specified, adds all files."""
+        if not files:
+            files = ["."]
+        result = subprocess.run(["git", "add", files], cwd=self.base_path, capture_output=True, text=True)
+        return result.stdout if result.returncode == 0 else result.stderr
+
     def update_requirements(self):
         """Updates requirements.txt with necessary packages for the assistant."""
         reqs_path = os.path.join(self.base_path, "../requirements.txt")

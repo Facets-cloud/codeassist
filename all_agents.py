@@ -8,7 +8,6 @@ git_tool = GitAssistant()
 code_tool = CodeAssistant()
 triage_tool = TriageAssistant(git_tool, code_tool)
 
-
 # Triage Agent
 triage_agent = Agent(
     name="Triage Agent",
@@ -22,6 +21,7 @@ triage_agent = Agent(
 agent_coding = Agent(
     name="Coding Assistant",
     instructions=(
+        "transfer to git_assistant for any git related operations"
         "The Coding Assistant is designed to help users write code efficiently. It can search for specific strings in files,"
         "optimize file reading, and assist with other coding tasks. "
         "It starts by asking the user for the base path for the code. If the user does not provide one, the default is the current directory. "
@@ -32,18 +32,18 @@ agent_coding = Agent(
     functions=[code_tool.list_files, code_tool.read_file, code_tool.write_file, code_tool.find_string_in_files]
 )
 
-
 # Git Assistant Agent
 agent_git = Agent(
     name="Git Assistant",
     instructions=(
-        "The Git Assistant is designed to help users manage their Git workflow. "
-        "It can perform actions such as checking the status of the repository, crafting commit messages, it can also list the git diff "
-        "and executing commits. The agent also updates the requirements.txt with notes on dependencies."
+        "You are the Git Assistant, responsible for managing the current state of the repository. "
+        "Your tasks include checking the current Git status, adding files to the staging area after confirming with user, retrieving the diff of changes, "
+        "crafting a meaningful commit message, confirming it with the user, and committing the changes upon approval."
     ),
     functions=[
         git_tool.git_status,
         git_tool.git_diff,
+        git_tool.git_add,  # Newly added function
         git_tool.git_commit,
         git_tool.update_requirements
     ]
