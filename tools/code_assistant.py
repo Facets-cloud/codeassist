@@ -1,16 +1,45 @@
 import os
 import fnmatch
+from typing import List, ClassVar
+
 import yaml  # Import the yaml module
 import logging
 
-class CodeAssistant:
-    def __init__(self):
-        self.base_path = ""
+from swarm import Agent
+from swarm.types import AgentFunction
 
-    def set_base_path(self, path: str):
-        """Set the base path for the agent to operate in."""
-        self.base_path = path
-        logging.info(f"Base path set to: {self.base_path}")
+PROMPT = """
+The Coding Assistant is designed to help users write and edit code. It interacts with files in the codebase. 
+When the agent is invoked, first use `read_context_file` to gather information about files and their structure to build context. [Important] Then, use this as primary information to cater to user requests.
+
+1. File management: Use `list_files` to offer a list of files or directories when necessary. If there are too many files, ask the user for guidance on where to focus.
+2. Code operations: Based on the user's instructions, perform the following tasks:
+   - Use `read_context_file` output to determine relevant files.
+   - Use `read_file` to retrieve content.
+   - Use `write_file` to create or update content.
+   - Use `find_string_in_files` to locate patterns or specific strings.
+   - When you have context about a file, use `update_context_file` to update the context about what is being done in the file for later use.
+3. Collaborative edits: After suggesting code changes, ask the user if they want the file edited directly. If confirmed, use `write_file` to apply the changes.
+4. Git operations: For any version control operations, transfer to the `git_assistant`.
+"""
+
+
+class CodeAssistant(Agent):
+    base_path: ClassVar[str] = ''
+    def __init__(self):
+        super().__init__()
+        self.name: str = "Coder"
+        self.model: str = "gpt-4o"
+        self.instructions = PROMPT
+        self.functions: List[AgentFunction] = [self.list_files,
+                                               self.read_file,
+                                               self.write_file,
+                                               self.find_string_in_files,
+                                               self.read_context_file,
+                                               self.update_context_file]
+        self.tool_choice: str = None
+        self.parallel_tool_calls: bool = True
+
 
     def list_files(self, directory: str):
         """List files in a given directory relative to the base path, respecting .gitignore."""
