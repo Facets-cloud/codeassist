@@ -59,6 +59,7 @@ class CodeAssistant:
     def find_string_in_files(self, search_string: str, dir_path: str = None):
         """Search for a string in all files within the directory path."""
         dir_path = dir_path or self.base_path
+        print(f"Searching for '{search_string}' in files under {dir_path}...")
         matched_files = []
 
         for root, _, files in os.walk(dir_path):
@@ -68,6 +69,7 @@ class CodeAssistant:
                     with open(file_path, 'r') as f:
                         if search_string in f.read():
                             matched_files.append(file_path)
+                            print(f"String found in {file_path}")
                 except Exception as e:
                     print(f"Error reading {file_path}: {e}")
 
