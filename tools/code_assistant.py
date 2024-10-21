@@ -55,3 +55,20 @@ class CodeAssistant:
         except Exception as e:
             print(f"Error writing to {file_path}: {e}")
             return "Error"
+
+    def find_string_in_files(self, search_string: str, dir_path: str = None):
+        """Search for a string in all files within the directory path."""
+        dir_path = dir_path or self.base_path
+        matched_files = []
+
+        for root, _, files in os.walk(dir_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, 'r') as f:
+                        if search_string in f.read():
+                            matched_files.append(file_path)
+                except Exception as e:
+                    print(f"Error reading {file_path}: {e}")
+
+        return matched_files

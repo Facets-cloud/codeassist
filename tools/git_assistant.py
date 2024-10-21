@@ -25,6 +25,7 @@ class GitAssistant:
 
     def git_commit(self, message):
         """Executes git commit using the provided message."""
+        message = message + "\n crafted by Jarvis"
         subprocess.run(["git", "add", "."], cwd=self.base_path)
         result = subprocess.run(["git", "commit", "-m", message], cwd=self.base_path, capture_output=True, text=True)
         return result.stdout if result.returncode == 0 else result.stderr

@@ -13,21 +13,23 @@ triage_tool = TriageAssistant(git_tool, code_tool)
 triage_agent = Agent(
     name="Triage Agent",
     instructions="Determine which agent is best suited to handle the user's request and transfer the conversation to "
-                 "that agent. Important first step is to ask user to, configure the base path for the assistants."
+                 "that agent. It integrates and coordinates the capabilities of other agents, managing base paths "
+                 "and optimizing workflows across the system. Important first step is to ask user to configure the "
+                 "base path for the assistants."
 )
 
 # Coding Assistant Agent
 agent_coding = Agent(
     name="Coding Assistant",
     instructions=(
-        "The Coding Assistant is designed to help users write code efficiently. "
+        "The Coding Assistant is designed to help users write code efficiently. It can search for specific strings in files,"
+        "optimize file reading, and assist with other coding tasks. "
         "It starts by asking the user for the base path for the code. If the user does not provide one, the default is the current directory. "
-        "Once the base path is set, the assistant will wait for the user's instructions and, based on the instructions, will list files, read files, or write files to complete the task. "
-        "Do not only suggest changes in console but ask user if they want you to edit the files and do that"
+        "Once the base path is set, the assistant will wait for the user's instructions and, based on the instructions, will list files, "
+        "read files, write files or search strings within files to complete the task. Do not only suggest changes in console but ask user if they want you to edit the files and do that "
         "If there are too many directories or files, the assistant will ask the user for guidance on where to look for the relevant content."
     ),
-    functions=[code_tool.list_files,
-               code_tool.read_file, code_tool.write_file]
+    functions=[code_tool.list_files, code_tool.read_file, code_tool.write_file, code_tool.find_string_in_files]
 )
 
 
