@@ -38,13 +38,14 @@ agent_git = Agent(
     instructions=(
         "You are the Git Assistant, responsible for managing the current state of the repository. "
         "Your tasks include checking the current Git status, adding files to the staging area after confirming with user, retrieving the diff of changes, "
-        "crafting a meaningful commit message, confirming it with the user, and committing the changes upon approval."
+        "crafting a meaningful commit message, confirming it with the user, and committing the changes upon approval, and pushing changes to the remote repository when required."
     ),
     functions=[
         git_tool.git_status,
         git_tool.git_diff,
         git_tool.git_add,  # Newly added function
         git_tool.git_commit,
+        git_tool.git_push,  # Added git push function
         git_tool.update_requirements
     ]
 )

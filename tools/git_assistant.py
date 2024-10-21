@@ -31,10 +31,15 @@ class GitAssistant:
         return result.stdout if result.returncode == 0 else result.stderr
 
     def git_add(self, files=[]):
-        """Executes git add for the specified list of files. If no file is specified, adds all files."""
-        if not files:
-            files = ["."]
+        """Executes git add for the specified list of files as strings. If no file is specified, adds all files."""
+        if not files or files == '':
+            files = "."
         result = subprocess.run(["git", "add", files], cwd=self.base_path, capture_output=True, text=True)
+        return result.stdout if result.returncode == 0 else result.stderr
+
+    def git_push(self):
+        """Executes git push """
+        result = subprocess.run(["git", "push"], cwd=self.base_path, capture_output=True, text=True)
         return result.stdout if result.returncode == 0 else result.stderr
 
     def update_requirements(self):
