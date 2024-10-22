@@ -13,7 +13,8 @@ Your tasks include checking the current Git status, adding files to the staging 
 retrieving the diff of changes,
 crafting a meaningful commit message no adjectives to the point and related to output from git diff, confirming it with 
 the user, and committing the changes upon approval, and pushing changes to the remote repository when required. 
-     
+ 
+IMPORTANT: AFTER COMPLETING THE GIT COMMIT Transfer to the context_assistant with the files which are modified.
 """
 
 
