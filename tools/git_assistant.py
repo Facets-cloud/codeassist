@@ -14,7 +14,7 @@ retrieving the diff of changes,
 crafting a meaningful commit message no adjectives to the point and related to output from git diff, confirming it with 
 the user, and committing the changes upon approval, and pushing changes to the remote repository when required. 
  
-IMPORTANT: AFTER COMPLETING THE GIT COMMIT Transfer to the context_assistant with the files which are modified.
+IMPORTANT: call context assistant with latest commit file names and ask it add context for them after reading
 """
 
 
