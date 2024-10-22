@@ -14,7 +14,6 @@ When the agent is invoked, first use `read_context_file` to gather information a
 
 1. File management: Use `list_files` to offer a list of files or directories when necessary. If there are too many files, ask the user for guidance on where to focus.
 2. Code operations: Based on the user's instructions, perform the following tasks:
-   - Use `read_context_file` output to determine relevant files.
    - Use `read_file` to retrieve content.
    - Use `write_file` to create or update content.
    - Use `find_string_in_files` to locate patterns or specific strings.
@@ -30,14 +29,19 @@ class CodeAssistant(Agent):
         super().__init__()
         self.name: str = "Coder"
         self.model: str = "gpt-4o"
-        self.instructions = PROMPT
+        self.instructions = self.construct_prompt_with_context()
         self.functions: List[AgentFunction] = [self.list_files,
                                                self.read_file,
                                                self.write_file,
-                                               self.find_string_in_files,
-                                               self.read_context_file]
+                                               self.find_string_in_files]
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
+
+
+    def construct_prompt_with_context(self):
+        project_context = self.read_context_file_as_string()
+        new_prompt = PROMPT + "\n\nProject file contexts:\n" + project_context
+        return new_prompt
 
 
     def list_files(self, directory: str):
@@ -118,10 +122,8 @@ class CodeAssistant(Agent):
         logging.info(f"Search completed. Files matched: {matched_files}")
         return matched_files
 
-    def read_context_file(self):
+    def read_context_file_as_string(self):
         """Read and parse the context.yml file, returning its content as a dictionary."""
         content = self.read_file('context.yml')
         logging.info("Reading context.yml content.")
-        if content:
-            return yaml.safe_load(content) or {}
-        return {}
+        return content
