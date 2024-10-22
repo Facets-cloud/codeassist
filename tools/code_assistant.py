@@ -35,8 +35,7 @@ class CodeAssistant(Agent):
                                                self.read_file,
                                                self.write_file,
                                                self.find_string_in_files,
-                                               self.read_context_file,
-                                               self.update_context_file]
+                                               self.read_context_file]
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
 
@@ -126,21 +125,3 @@ class CodeAssistant(Agent):
         if content:
             return yaml.safe_load(content) or {}
         return {}
-
-    def update_context_file(self, file_path: str, context_content: str):
-        """Add or update file context in the context.yml file."""
-        context_file_path = os.path.join(self.base_path, 'context.yml')
-
-        # Load existing contexts using the read_context_file method
-        context_data = self.read_context_file()
-
-        # Update context
-        context_data[file_path] = context_content
-
-        # Write updated context back to the file using the write_file method
-        success = self.write_file('context.yml', yaml.safe_dump(context_data, default_flow_style=False))
-
-        if success:
-            logging.info(f"Context for {file_path} updated in {context_file_path}")
-        else:
-            logging.error(f"Failed to update context for {file_path} in {context_file_path}")

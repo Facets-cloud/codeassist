@@ -63,7 +63,7 @@ class GitAssistant(Agent):
             logging.error("Failed to commit changes.")
         return result.stdout if result.returncode == 0 else result.stderr
 
-    def git_add(self, files=[]):
+    def git_add(self, files="."):
         """Executes git add for the specified list of files as strings. If no file is specified, adds all files."""
         if not files or files == '':
             files = "."

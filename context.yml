@@ -23,6 +23,10 @@ context.yml: This file stores contextual information about various files in the 
   It is used to help developers understand the purpose and functionality of each file
   by providing concise descriptions, which can assist in both development and collaborative
   environments.
+project_context.txt: This file stores context information for the project, helping
+  developers understand the purpose and functionality of the project, specifically
+  focusing on the development of an AI agent to write code. It references the swarm
+  project located at https://github.com/openai/swarm.git.
 run.py: The `run.py` file initializes and runs a command line interface for the Swarm
   application. It sets up logging to record messages in a log file (`app.log`), defines
   functions to process and print streaming responses, and manages the interaction
@@ -30,10 +34,19 @@ run.py: The `run.py` file initializes and runs a command line interface for the 
   client-server communication using a given starting agent, handling user input and
   agent responses until the application exits. It defaults to using a `triage_agent`
   as the starting agent when run as a standalone script.
-tools/context_assistant.py: This file contains the Context Assistant class, which
-  is responsible for managing and updating context related to files in the codebase.
-  It operates primarily on reading and modifying the `context.yml` where file contexts
-  are stored.
-tools/git_assistant.py: This file includes the Git Assistant class, which provides
-  functionalities for interacting with Git operations such as commit, push, and pull.
-  It's designed to assist in version control tasks conveniently from within the codebase.
+tools/code_assistant.py: This file contains the Code Assistant class, which provides
+  functionalities for assisting with code management tasks such as editing and reviewing
+  code, generating documentation, and understanding code context. It aims to facilitate
+  coding workflows and improve productivity for developers.
+tools/context_assistant.py: The Context Assistant class in this file is responsible
+  for managing and updating contextual information for the project's codebase. It
+  reads from and writes to the context.yml to store and retrieve context details,
+  aiding developers in understanding the code structure and purpose.
+tools/git_assistant.py: The Git Assistant class, defined in this file, manages git-related
+  operations such as staging changes, committing, pushing, and other version control
+  tasks. It provides an interface for seamless integration of git functionalities
+  into the development workflow.
+tools/triage_assistant.py: This file houses the Triage Assistant class, which determines
+  and directs tasks to the appropriate agent (Coding, Git, or Context Assistant) based
+  on the nature of the task. It helps manage workflow efficiently by invoking the
+  right assistant for specific tasks.
