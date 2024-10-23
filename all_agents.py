@@ -19,6 +19,7 @@ base_path = sys.argv[1]  # The first argument after the script name
 
 
 def initialize_agents(path):
+    print("Base Path: " + path)
     GitAssistant.base_path = path
     CodeAssistant.base_path = path
     TriageAssistant.base_path = path
@@ -52,7 +53,8 @@ def transfer_back_to_triage():
 
 # Extend triage_agent functions
 triage_agent.functions = [
-    transfer_to_coding_assistant
+    transfer_to_coding_assistant,
+    transfer_to_git_assistant
 ]
 code_agent.functions.extend([transfer_back_to_triage, transfer_to_git_assistant])
 git_agent.functions.extend([transfer_back_to_triage, transfer_to_context_assistant])

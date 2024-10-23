@@ -34,10 +34,15 @@ run.py: The `run.py` file initializes and runs a command line interface for the 
   client-server communication using a given starting agent, handling user input and
   agent responses until the application exits. It defaults to using a `triage_agent`
   as the starting agent when run as a standalone script.
-tools/code_assistant.py: This file contains the Code Assistant class, which provides
-  functionalities for assisting with code management tasks such as editing and reviewing
-  code, generating documentation, and understanding code context. It aims to facilitate
-  coding workflows and improve productivity for developers.
+tools/code_assistant.py: The `code_assistant.py` file encapsulates the Code Assistant
+  class, focusing on enhancing developer efficiency through code management functionalities.
+  Its primary features include listing files, reading and writing file contents, and
+  searching for specific strings within files, respecting .gitignore settings. It
+  facilitates collaborative coding efforts by suggesting and applying changes following
+  user instructions, and integrates seamlessly with version control operations by
+  handing over tasks to the Git Assistant when necessary. The class is initialized
+  with parameters to establish prompt context, includes methods for interacting with
+  the filesystem, and ensures updates are correctly applied and logged for transparency.
 tools/context_assistant.py: The Context Assistant class in this file is responsible
   for managing and updating contextual information for the project's codebase. It
   reads from and writes to the context.yml to store and retrieve context details,

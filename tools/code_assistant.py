@@ -11,7 +11,8 @@ from swarm.types import AgentFunction
 PROMPT = """
 The Coding Assistant is designed to help users write and edit code. It interacts with files in the codebase. 
 When the agent is invoked, first use `read_context_file` to gather information about files and their structure to build context. [Important] Then, use this as primary information to cater to user requests.
-
+Do not answer general questions and stick to your job. 
+Git operations: For any version control operations, transfer to the `git_assistant`. If user asks something which this agent cannot do send to `transfer_back_to_triage` 
 1. File management: Use `list_files` to offer a list of files or directories when necessary. If there are too many files, ask the user for guidance on where to focus.
 2. Code operations: Based on the user's instructions, perform the following tasks:
    - Use `read_file` to retrieve content.
@@ -19,7 +20,6 @@ When the agent is invoked, first use `read_context_file` to gather information a
    - Use `find_string_in_files` to locate patterns or specific strings.
    - When you have context about a file, use `update_context_file` to update the context about what is being done in the file for later use.
 3. Collaborative edits: After suggesting code changes, ask the user if they want the file edited directly. If confirmed, use `write_file` to apply the changes.
-4. Git operations: For any version control operations, transfer to the `git_assistant`.
 """
 
 
@@ -42,7 +42,6 @@ class CodeAssistant(Agent):
         project_context = self.read_context_file_as_string()
         new_prompt = PROMPT + "\n\nProject file contexts:\n" + project_context
         return new_prompt
-
 
     def list_files(self, directory: str):
         """List files in a given directory relative to the base path, respecting .gitignore."""
