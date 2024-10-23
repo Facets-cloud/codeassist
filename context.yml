@@ -1,24 +1,5 @@
-all_agents.py: 'The `all_agents.py` file defines three primary agents: Triage Agent,
-  Coding Assistant Agent, and Git Assistant Agent. Each agent is responsible for specific
-  tasks within the system:
-
-
-  1. **Triage Agent**: Manages the overall workflow by determining the appropriate
-  agent for handling different user requests. It prompts the user to configure the
-  base path for the assistants as a first step.
-
-
-  2. **Coding Assistant Agent**: Focuses on tasks related to code management, including
-  reading and updating context in files, searching codebase, and other coding activities.
-  If a Git-related task arises, it refers the task to the Git Assistant.
-
-
-  3. **Git Assistant Agent**: Handles Git operations like checking status, staging,
-  committing, and pushing changes. For non-Git-related operations, it redirects to
-  the Triage agent.
-
-
-  The file also contains functions to transfer control between these agents as needed.'
+all_agents.py: This script manages and coordinates various agents within the system,
+  handling tasks such as initialization, execution, and communication.
 context.yml: This file stores contextual information about various files in the codebase.
   It is used to help developers understand the purpose and functionality of each file
   by providing concise descriptions, which can assist in both development and collaborative
@@ -34,15 +15,10 @@ run.py: The `run.py` file initializes and runs a command line interface for the 
   client-server communication using a given starting agent, handling user input and
   agent responses until the application exits. It defaults to using a `triage_agent`
   as the starting agent when run as a standalone script.
-tools/code_assistant.py: The `code_assistant.py` file encapsulates the Code Assistant
-  class, focusing on enhancing developer efficiency through code management functionalities.
-  Its primary features include listing files, reading and writing file contents, and
-  searching for specific strings within files, respecting .gitignore settings. It
-  facilitates collaborative coding efforts by suggesting and applying changes following
-  user instructions, and integrates seamlessly with version control operations by
-  handing over tasks to the Git Assistant when necessary. The class is initialized
-  with parameters to establish prompt context, includes methods for interacting with
-  the filesystem, and ensures updates are correctly applied and logged for transparency.
+server.py: This module sets up and runs the server, handling incoming requests and
+  routing them to appropriate handlers or services.
+tools/code_assistant.py: This module provides functionality for code assistance, including
+  parsing, analysis, and suggestions to improve or refactor code.
 tools/context_assistant.py: The Context Assistant class in this file is responsible
   for managing and updating contextual information for the project's codebase. It
   reads from and writes to the context.yml to store and retrieve context details,
