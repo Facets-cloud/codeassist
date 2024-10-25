@@ -1,5 +1,6 @@
 import os
 import fnmatch
+import re
 from typing import List, ClassVar
 
 import yaml  # Import the yaml module
@@ -17,7 +18,9 @@ Git operations: For any version control operations, transfer to the `git_assista
 2. Code operations: Based on the user's instructions, perform the following tasks:
    - Use `read_file` to retrieve content.
    - Use `write_file` to create or update content.
+   - Use `append_to_file` to add content to an existing file without overwriting.
    - Use `find_string_in_files` to locate patterns or specific strings.
+   - Use `find_file` to search for files by name or with regex.
    - When you have context about a file, use `update_context_file` to update the context about what is being done in the file for later use.
 3. Collaborative edits: After suggesting code changes, ask the user if they want the file edited directly. If confirmed, use `write_file` to apply the changes.
 """
@@ -91,6 +94,18 @@ class CodeAssistant(Agent):
             logging.error(f"Error writing to {file_path}: {e}")
             return "Error"
 
+    def append_to_file(self, file_name_with_path: str, content: str):
+        """Append content to a file."""
+        file_path = os.path.join(self.base_path, file_name_with_path)
+        try:
+            with open(file_path, 'a') as file:
+                file.write(content)
+            logging.info(f"Content appended to {file_path} successfully.")
+            return "Success!"
+        except Exception as e:
+            logging.error(f"Error appending to {file_path}: {e}")
+            return "Error"
+
     def find_string_in_files(self, search_string: str, dir_path: str = None):
         """Search for a string in all files within the directory path, respecting .gitignore."""
         dir_path = dir_path or self.base_path
@@ -126,3 +141,35 @@ class CodeAssistant(Agent):
         content = self.read_file('context.yml')
         logging.info("Reading context.yml content.")
         return content
+
+    def find_file(self, file_pattern: str, dir_path: str = None, use_regex: bool = False):
+        """Find a file by name or regex pattern within the directory path, respecting .gitignore."""
+        dir_path = dir_path or self.base_path
+        logging.info(f"Searching for file pattern '{file_pattern}' under {dir_path}...")
+        found_files = []
+
+        # Read and parse .gitignore
+        gitignore_path = os.path.join(self.base_path, '../.gitignore')
+        ignore_patterns = []
+        if os.path.exists(gitignore_path):
+            with open(gitignore_path, 'r') as file:
+                ignore_patterns = [line.strip() for line in file if line.strip() and not line.startswith('#')]
+
+        for root, _, files in os.walk(dir_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # Skip ignored files
+                if any(fnmatch.fnmatch(file_path, pattern) for pattern in ignore_patterns):
+                    continue
+                # Match using regex or fnmatch
+                if use_regex:
+                    if re.search(file_pattern, file):
+                        found_files.append(file_path)
+                        logging.info(f"File found: {file_path}")
+                else:
+                    if fnmatch.fnmatch(file, file_pattern):
+                        found_files.append(file_path)
+                        logging.info(f"File found: {file_path}")
+
+        logging.info(f"Search completed. Files found: {found_files}")
+        return found_files

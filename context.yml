@@ -1,5 +1,6 @@
-all_agents.py: This script manages and coordinates various agents within the system,
-  handling tasks such as initialization, execution, and communication.
+all_agents.py: This file is responsible for managing and coordinating actions across
+  different agents in the system. It likely provides abstractions to initialize, control,
+  and communicate with various agents, ensuring they work together smoothly.
 context.yml: This file stores contextual information about various files in the codebase.
   It is used to help developers understand the purpose and functionality of each file
   by providing concise descriptions, which can assist in both development and collaborative
@@ -15,10 +16,18 @@ run.py: The `run.py` file initializes and runs a command line interface for the 
   client-server communication using a given starting agent, handling user input and
   agent responses until the application exits. It defaults to using a `triage_agent`
   as the starting agent when run as a standalone script.
-server.py: This module sets up and runs the server, handling incoming requests and
-  routing them to appropriate handlers or services.
-tools/code_assistant.py: This module provides functionality for code assistance, including
-  parsing, analysis, and suggestions to improve or refactor code.
+server.py: The server.py file sets up a Flask web server to handle chat-related HTTP
+  API endpoints. It interfaces with a MongoDB database to store and retrieve chat
+  messages. Key functionalities include starting new chat sessions, handling ongoing
+  chat communications, and retrieving chat history with pagination. It uses Flask
+  for the web framework and PyMongo for MongoDB interactions. UUID is used for unique
+  chat thread identification, and the server leverages environment variables to configure
+  database connections. The implementation provides a stub for agent responses, suggesting
+  areas for further development.
+tools/code_assistant.py: This script is likely responsible for providing coding assistance
+  functionalities within the system. It might include features like auto-completion,
+  error checking, and code suggestions to enhance the coding efficiency and experience
+  for developers.
 tools/context_assistant.py: The Context Assistant class in this file is responsible
   for managing and updating contextual information for the project's codebase. It
   reads from and writes to the context.yml to store and retrieve context details,
