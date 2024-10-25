@@ -1,68 +1,55 @@
-# Project Name
+# Project README
 
-This project is designed to assist users in managing and interacting with files and code more efficiently.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+Welcome to the Swarm-based AI Coding Assistant! This application leverages capabilities from the Swarm project to provide a multi-agent coding assistant designed to streamline development tasks.
 
 ## Overview
 
-The project focuses on the following main component:
+This project develops an AI agent to assist with coding tasks, utilizing a triage system to distribute tasks among specialized agents. The application is fundamentally based on the [Swarm Project](https://github.com/openai/swarm.git).
 
-- **Code Assistant**: A tool designed to help users efficiently write and manage code. It offers functionalities like setting base directories, listing files while respecting `.gitignore`, reading content from files, and writing content to files.
+## Getting Started
 
-## Installation
+### Prerequisites
 
-Ensure you have Python 3.x installed in your environment. Then, proceed with the following:
+Ensure you have Python installed on your machine. You'll also need to clone the repository and install the necessary dependencies. You can typically do this with:
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-
-# Navigate into the project directory
-cd <project-directory>
-
-# (Optional) Create and activate a virtual environment
-python -m venv env
-source env/bin/activate   # On Windows use `env\\Scripts\\activate`
-
-# Install dependencies (if needed)
+git clone https://github.com/yourusername/yourproject.git
+cd yourproject
 pip install -r requirements.txt
 ```
 
-## Usage
+### Running the Application
 
-### Running the Code Assistant
-
-To use the code assistant, run:
+The primary interface for interacting with the coding assistant is through the command line. To start the application, run:
 
 ```bash
-python code_assistant.py
+python run.py /path/to/your/code
 ```
 
-### Main Script
+**Note**: Replace `/path/to/your/code` with the actual file path where your project or codebase resides. This allows the coding assistant to interact appropriately with your files.
 
-Main interactions or demo can be executed from:
+## Usage Guide
 
-```bash
-python run.py
-```
+Upon starting, follow the on-screen prompts:
+
+1. **Input Commands**: Enter your queries or tasks, pressing Enter after each line, and use a blank line to submit.
+2. **Interactive Responses**: The CLI will process inputs using the appropriate agents and display results inline.
+3. **Agent Transfers**: Tasks can seamlessly move between agents (e.g., coding, git, context) as decided by the triage logic.
+
+### Capabilities
+
+- **Code Assistance**: Receive suggestions on code completion, error checking, and refactoring through the coding assistant.
+- **Version Control**: Leverage the git assistant for committing, pushing, and managing code versions.
+- **Contextual Help**: The context assistant can provide file details to better understand code structures and purposes.
+
+## Logging
+
+All actions and interactions are logged to `app.log`. This file is generated in the application directory and is useful for debugging and tracking activity.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Feel free to submit issues, request features, or contribute to the codebase by submitting a pull request.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+This project is licensed under the MIT License.
