@@ -69,8 +69,9 @@ class GitAssistant(Agent):
         """Executes git add for the specified list of files as strings. If no file is specified, adds all files."""
         if not files or files == '':
             files = "."
+        file_list = files.split() if isinstance(files, str) else files
         logging.info(f"Adding {files} to staging area...")
-        result = subprocess.run(["git", "add", files], cwd=self.base_path, capture_output=True, text=True)
+        result = subprocess.run(["git", "add"] + file_list, cwd=self.base_path, capture_output=True, text=True)
         if result.returncode == 0:
             logging.info(f"Added {files} to staging area.")
         else:
