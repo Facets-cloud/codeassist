@@ -32,10 +32,11 @@ tools/context_assistant.py: The Context Assistant class in this file is responsi
   for managing and updating contextual information for the project's codebase. It
   reads from and writes to the context.yml to store and retrieve context details,
   aiding developers in understanding the code structure and purpose.
-tools/git_assistant.py: The Git Assistant class, defined in this file, manages git-related
-  operations such as staging changes, committing, pushing, and other version control
-  tasks. It provides an interface for seamless integration of git functionalities
-  into the development workflow.
+tools/git_assistant.py: This module is responsible for managing Git operations within
+  the system. It includes functionalities like checking the current Git status, retrieving
+  the diff of changes, adding files to the staging area, committing changes with a
+  meaningful message, pushing changes to a remote repository, listing recent git commits,
+  and unstaging changes. The updated PROMPT reflects the expanded capabilities.
 tools/triage_assistant.py: This file houses the Triage Assistant class, which determines
   and directs tasks to the appropriate agent (Coding, Git, or Context Assistant) based
   on the nature of the task. It helps manage workflow efficiently by invoking the

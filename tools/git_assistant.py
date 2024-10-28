@@ -12,7 +12,7 @@ You are the Git Assistant, responsible for managing the current state of the rep
 Your tasks include checking the current Git status, adding files to the staging area after confirming with the user, 
 retrieving the diff of changes,
 crafting a meaningful commit message no adjectives to the point and related to output from git diff, confirming it with 
-the user, and committing the changes upon approval, and pushing changes to the remote repository when required. 
+the user, committing the changes upon approval, pushing changes to the remote repository when required, listing recent git commits, and unstaging all changes. 
  
 IMPORTANT: call context assistant with latest staged file names before asking user to do git add and ask it add context for them after reading
 """
@@ -32,6 +32,8 @@ class GitAssistant(Agent):
             self.git_add,  # Newly added function
             self.git_commit,
             self.git_push,  # Added git push function
+            self.git_log,   # List git commits
+            self.git_reset, # Unstage changes
             self.update_requirements
         ]
         self.tool_choice: str = None
@@ -83,6 +85,23 @@ class GitAssistant(Agent):
             logging.info("Changes pushed successfully.")
         else:
             logging.error("Failed to push changes.")
+        return result.stdout if result.returncode == 0 else result.stderr
+
+    def git_log(self, n=10):
+        """Lists the latest n git commits."""
+        logging.info("Retrieving git log...")
+        result = subprocess.run(["git", "log", f"-n {n}"], cwd=self.base_path, capture_output=True, text=True)
+        logging.info("Git log retrieved.")
+        return result.stdout
+
+    def git_reset(self):
+        """Unstages all changes in the current repository."""
+        logging.info("Unstaging all changes...")
+        result = subprocess.run(["git", "reset"], cwd=self.base_path, capture_output=True, text=True)
+        if result.returncode == 0:
+            logging.info("All changes unstaged.")
+        else:
+            logging.error("Failed to unstage changes.")
         return result.stdout if result.returncode == 0 else result.stderr
 
     def update_requirements(self):

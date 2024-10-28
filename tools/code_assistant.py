@@ -36,7 +36,7 @@ class CodeAssistant(Agent):
         self.functions: List[AgentFunction] = [self.list_files,
                                                self.read_file,
                                                self.write_file,
-                                               self.find_string_in_files]
+                                               self.find_string_in_files, self.append_to_file, self.find_file]
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
 
