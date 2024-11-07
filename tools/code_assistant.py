@@ -2,7 +2,7 @@ import os
 import fnmatch
 import re
 from typing import List, ClassVar
-
+import subprocess
 import yaml  # Import the yaml module
 import logging
 
@@ -10,7 +10,7 @@ from swarm import Agent
 from swarm.types import AgentFunction
 
 PROMPT = """
-The Coding Assistant is designed to help users write and edit code. It interacts with files in the codebase. 
+Explaining Code is another functionality, separate than context. The Coding Assistant is designed to help users explain, write and edit code. It interacts with files in the codebase. 
 When the agent is invoked, first use `read_context_file` to gather information about files and their structure to build context. [Important] Then, use this as primary information to cater to user requests.
 Do not answer general questions and stick to your job. 
 Git operations: For any version control operations, transfer to the `git_assistant`. If user asks something which this agent cannot do send to `transfer_back_to_triage` 
@@ -106,35 +106,30 @@ class CodeAssistant(Agent):
             logging.error(f"Error appending to {file_path}: {e}")
             return "Error"
 
-    def find_string_in_files(self, search_string: str, dir_path: str = None):
-        """Search for a string in all files within the directory path, respecting .gitignore."""
+    def find_string_in_files(self, search_string: str, dir_path: str = None, file_pattern: str = '*'):
+        """Search for a string within the directory path, respecting the file pattern and limiting to 1000 results."""
         dir_path = dir_path or self.base_path
-        logging.info(f"Searching for '{search_string}' in files under {dir_path}...")
-        matched_files = []
+        logging.info(f"Searching for '{search_string}' in files matching '{file_pattern}' under {dir_path}...")
 
-        # Read and parse .gitignore
-        gitignore_path = os.path.join(self.base_path, '../.gitignore')
-        ignore_patterns = []
-        if os.path.exists(gitignore_path):
-            with open(gitignore_path, 'r') as file:
-                ignore_patterns = [line.strip() for line in file if line.strip() and not line.startswith('#')]
+        # Construct the grep command with include pattern and limiting output
+        grep_command = f"grep -rl --include='{file_pattern}' '{search_string}' {dir_path}"
 
-        for root, _, files in os.walk(dir_path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                # Skip ignored files
-                if any(fnmatch.fnmatch(file_path, pattern) for pattern in ignore_patterns):
-                    continue
-                try:
-                    with open(file_path, 'r') as f:
-                        if search_string in f.read():
-                            matched_files.append(file_path)
-                            logging.info(f"String found in {file_path}")
-                except Exception as e:
-                    logging.error(f"Error reading {file_path}: {e}")
+        try:
+            # Run the grep command
+            process = subprocess.run(grep_command, shell=True, check=True, capture_output=True, text=True)
+            
+            # Process the output and limit to 1000 results
+            matched_files = process.stdout.splitlines()[:1000]
+            
+            for match in matched_files:
+                logging.info(f"String found: {match}")
+                
+            logging.info(f"Search completed. Matches found: {len(matched_files)}")
+            return matched_files
 
-        logging.info(f"Search completed. Files matched: {matched_files}")
-        return matched_files
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Error running grep command: {e.stderr}")
+            return []
 
     def read_context_file_as_string(self):
         """Read and parse the context.yml file, returning its content as a dictionary."""

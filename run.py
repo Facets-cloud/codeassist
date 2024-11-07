@@ -4,18 +4,24 @@ from swarm import Swarm
 import json
 import logging
 
-# Set up logging to file only
-log_file = 'app.log'  # Specify your log file path
-# Add a file handler
+log_file = 'app2.log'  # Specify your log file path
+
+# File handler
 file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
-# Get the root logger, clear existing handlers, and add the file handler
-logger = logging.getLogger()
-logger.handlers.clear()  # Clear existing handlers to prevent console logging
-logger.addHandler(file_handler)
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
+# Get the root logger, set level, clear existing handlers, and add both handlers
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)  # Set root logger level to DEBUG to capture all messages
+logger.handlers.clear()  # Clear any existing handlers
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
 
 def process_and_print_streaming_response(response):
     content = ""
