@@ -108,7 +108,7 @@ class CodeAssistant(Agent):
 
     def find_string_in_files(self, search_string: str, dir_path: str = None, file_pattern: str = '*'):
         """Search for a string within the directory path, respecting the file pattern and limiting to 1000 results."""
-        dir_path = dir_path or self.base_path
+        dir_path = os.path.join(self.base_path, dir_path)
         logging.info(f"Searching for '{search_string}' in files matching '{file_pattern}' under {dir_path}...")
 
         # Construct the grep command with include pattern and limiting output
@@ -137,9 +137,9 @@ class CodeAssistant(Agent):
         logging.info("Reading context.yml content.")
         return content
 
-    def find_file(self, file_pattern: str, dir_path: str = None, use_regex: bool = False):
+    def find_file(self, file_pattern: str, dir_path: str = ".", use_regex: bool = False):
         """Find a file by name or regex pattern within the directory path, respecting .gitignore."""
-        dir_path = dir_path or self.base_path
+        dir_path = os.path.join(self.base_path, dir_path)
         logging.info(f"Searching for file pattern '{file_pattern}' under {dir_path}...")
         found_files = []
 

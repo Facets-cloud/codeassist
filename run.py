@@ -4,7 +4,7 @@ from swarm import Swarm
 import json
 import logging
 
-log_file = 'app2.log'  # Specify your log file path
+log_file = 'app.log'  # Specify your log file path
 
 # File handler
 file_handler = logging.FileHandler(log_file)
@@ -104,6 +104,7 @@ def run_demo_loop(
             messages=messages,
             context_variables=context_variables or {},
             stream=stream,
+            model_override = 'gpt-4o-mini',
             debug=debug,
         )
 

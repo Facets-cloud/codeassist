@@ -1,6 +1,8 @@
 all_agents.py: This file is responsible for managing and coordinating actions across
   different agents in the system. It likely provides abstractions to initialize, control,
   and communicate with various agents, ensuring they work together smoothly.
+app2.log: This log file captures runtime information and system outputs for monitoring
+  and debugging purposes.
 context.yml: This file stores contextual information about various files in the codebase.
   It is used to help developers understand the purpose and functionality of each file
   by providing concise descriptions, which can assist in both development and collaborative
@@ -9,13 +11,9 @@ project_context.txt: This file stores context information for the project, helpi
   developers understand the purpose and functionality of the project, specifically
   focusing on the development of an AI agent to write code. It references the swarm
   project located at https://github.com/openai/swarm.git.
-run.py: The `run.py` file initializes and runs a command line interface for the Swarm
-  application. It sets up logging to record messages in a log file (`app.log`), defines
-  functions to process and print streaming responses, and manages the interaction
-  loop with the user. The primary function, `run_demo_loop`, executes the simulated
-  client-server communication using a given starting agent, handling user input and
-  agent responses until the application exits. It defaults to using a `triage_agent`
-  as the starting agent when run as a standalone script.
+run.py: This file serves as the main entry point for executing the application. It
+  coordinates the initialization and execution of various components required by the
+  app.
 server.py: The server.py file sets up a Flask web server to handle chat-related HTTP
   API endpoints. It interfaces with a MongoDB database to store and retrieve chat
   messages. Key functionalities include starting new chat sessions, handling ongoing
@@ -24,20 +22,14 @@ server.py: The server.py file sets up a Flask web server to handle chat-related 
   chat thread identification, and the server leverages environment variables to configure
   database connections. The implementation provides a stub for agent responses, suggesting
   areas for further development.
-tools/code_assistant.py: This script is likely responsible for providing coding assistance
-  functionalities within the system. It might include features like auto-completion,
-  error checking, and code suggestions to enhance the coding efficiency and experience
-  for developers.
+tools/code_assistant.py: This module provides functionalities and supportive methods
+  for coding assistance. It is used to enhance development workflows and interactions.
 tools/context_assistant.py: The Context Assistant class in this file is responsible
   for managing and updating contextual information for the project's codebase. It
   reads from and writes to the context.yml to store and retrieve context details,
   aiding developers in understanding the code structure and purpose.
-tools/git_assistant.py: This module facilitates Git operations within the system.
-  It provides methods for checking the Git status, retrieving diffs, adding files
-  to the staging area (with handling for space-separated file names), committing changes
-  with crafted messages, pushing changes to a remote repository, listing recent commits,
-  and unstaging changes. The Git Assistant is a part of an AI-driven system to assist
-  users in managing version control tasks efficiently.
+tools/git_assistant.py: This module contains functionalities to assist with Git operations,
+  aiming to simplify version control tasks and interactions with the Git system.
 tools/triage_assistant.py: This file houses the Triage Assistant class, which determines
   and directs tasks to the appropriate agent (Coding, Git, or Context Assistant) based
   on the nature of the task. It helps manage workflow efficiently by invoking the
