@@ -2,9 +2,6 @@ from typing import ClassVar
 
 from swarm import Agent
 
-from tools.code_assistant import CodeAssistant
-from tools.git_assistant import GitAssistant
-import logging
 import os
 
 PROMPT = """

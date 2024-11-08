@@ -54,7 +54,7 @@ class CodeAssistant(Agent):
             return []
 
         # Read and parse .gitignore
-        gitignore_path = os.path.join(self.base_path, '../.gitignore')
+        gitignore_path = os.path.join(self.base_path, '../../.gitignore')
         ignore_patterns = []
         if os.path.exists(gitignore_path):
             with open(gitignore_path, 'r') as file:
@@ -144,7 +144,7 @@ class CodeAssistant(Agent):
         found_files = []
 
         # Read and parse .gitignore
-        gitignore_path = os.path.join(self.base_path, '../.gitignore')
+        gitignore_path = os.path.join(self.base_path, '../../.gitignore')
         ignore_patterns = []
         if os.path.exists(gitignore_path):
             with open(gitignore_path, 'r') as file:

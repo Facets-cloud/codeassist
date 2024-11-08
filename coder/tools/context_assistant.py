@@ -1,11 +1,8 @@
 import os
 import yaml  # Import the yaml module
 import logging
-from typing import ClassVar
 
-from swarm import Agent
-
-from tools.code_assistant import CodeAssistant
+from coder.tools.code_assistant import CodeAssistant
 
 PROMPT = """
 The Context Assistant is designed to manage context within the codebase. It focuses on operations related to reading and updating context information stored in files.
