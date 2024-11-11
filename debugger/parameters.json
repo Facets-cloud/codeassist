@@ -1,0 +1,10 @@
+{
+    "facets": {
+        "url": "http://example.com",
+        "username": "your_username",
+        "token": "your_secure_token",
+        "project": "project_name",
+        "environment": "env name"
+    },
+    "model": "gpt-4o-mini"
+}

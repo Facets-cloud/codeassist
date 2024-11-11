@@ -1,3 +1,9 @@
+../debugger/parameters.json: This file contains configuration parameters specific
+  to the debugger module, allowing for detailed control over debugging operations
+  and settings within this module.
+../debugger/tools/facets_platform_assistant.py: This script assists with platform-specific
+  functionalities and operations related to facets within the debugger tools, integrating
+  with various platform services as needed.
 all_agents.py: This file is responsible for managing and coordinating actions across
   different agents in the system. It likely provides abstractions to initialize, control,
   and communicate with various agents, ensuring they work together smoothly.
@@ -7,13 +13,16 @@ context.yml: This file stores contextual information about various files in the 
   It is used to help developers understand the purpose and functionality of each file
   by providing concise descriptions, which can assist in both development and collaborative
   environments.
+parameters.json: This file contains configuration parameters required for setting
+  up and managing different aspects of the application. It's used to dynamically adjust
+  the application's behavior and settings.
 project_context.txt: This file stores context information for the project, helping
   developers understand the purpose and functionality of the project, specifically
   focusing on the development of an AI agent to write code. It references the swarm
   project located at https://github.com/openai/swarm.git.
-run.py: This file serves as the main entry point for executing the application. It
-  coordinates the initialization and execution of various components required by the
-  app.
+run.py: This script is the entry point for the application, orchestrating the initialization
+  and execution of various components. It sets up the necessary environment and triggers
+  main workflows.
 server.py: The server.py file sets up a Flask web server to handle chat-related HTTP
   API endpoints. It interfaces with a MongoDB database to store and retrieve chat
   messages. Key functionalities include starting new chat sessions, handling ongoing
@@ -24,10 +33,9 @@ server.py: The server.py file sets up a Flask web server to handle chat-related 
   areas for further development.
 tools/code_assistant.py: This module provides functionalities and supportive methods
   for coding assistance. It is used to enhance development workflows and interactions.
-tools/context_assistant.py: The Context Assistant class in this file is responsible
-  for managing and updating contextual information for the project's codebase. It
-  reads from and writes to the context.yml to store and retrieve context details,
-  aiding developers in understanding the code structure and purpose.
+tools/context_assistant.py: This module manages context operations, including reading
+  and updating context information in files for use across different parts of the
+  application.
 tools/git_assistant.py: This module contains functionalities to assist with Git operations,
   aiming to simplify version control tasks and interactions with the Git system.
 tools/triage_assistant.py: This file houses the Triage Assistant class, which determines

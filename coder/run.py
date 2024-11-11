@@ -23,6 +23,15 @@ logger.handlers.clear()  # Clear any existing handlers
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
+# Log the model being used
+with open('parameters.json') as f:
+    parameters = json.load(f)
+    model_override = parameters.get('model', 'gpt-4o-mini')
+logger.info(f'Model being used: {model_override}')
+
+# Print the model being used
+print(f'Model being used: {model_override}')
+
 def process_and_print_streaming_response(response):
     content = ""
     last_sender = ""
@@ -76,6 +85,7 @@ def pretty_print_messages(messages) -> None:
             arg_str = json.dumps(json.loads(args)).replace(":", "=")
             print(f"\033[95m{name}\033[0m({arg_str[1:-1]})")
 
+
 def run_demo_loop(
         starting_agent, context_variables=None, stream=False, debug=False
 ) -> None:
@@ -104,7 +114,7 @@ def run_demo_loop(
             messages=messages,
             context_variables=context_variables or {},
             stream=stream,
-            model_override = 'gpt-4o-mini',
+            model_override=model_override,
             debug=debug,
         )
 
@@ -115,6 +125,7 @@ def run_demo_loop(
 
         messages.extend(response.messages)
         agent = response.agent
+
 
 if __name__ == "__main__":
     run_demo_loop(triage_agent)
