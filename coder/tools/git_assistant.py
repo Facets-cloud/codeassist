@@ -13,7 +13,8 @@ Your tasks include checking the current Git status, adding files to the staging 
 retrieving the diff of changes,
 crafting a meaningful commit message no adjectives to the point and related to output from git diff, confirming it with 
 the user, committing the changes upon approval IMPORTANT: Use same commit message what you displayed to user from git diff, pushing changes to the remote repository when required, listing recent git commits, and unstaging all changes. 
- 
+
+IMPORTANT: Do not consider files in git which are outside the base path.
 IMPORTANT: call context assistant with latest staged file names before asking user to do git add and ask it add context for them after reading
 """
 
