@@ -1,10 +1,11 @@
 {
-    "facets": {
-        "url": "http://example.com",
-        "username": "your_username",
-        "token": "your_secure_token",
-        "project": "project_name",
-        "environment": "env name"
+  "model": "gpt-4o-mini",
+  "clusters": {
+    "demo_qa": {
+      "kubeconfig": "/Users/anshulsao/Downloads/qa-kubeconfig (1)"
     },
-    "model": "gpt-4o-mini"
+    "moveinsync_cp": {
+      "kubeconfig": "/Users/anshulsao/Downloads/moveinsync-kubeconfig"
+    }
+  }
 }

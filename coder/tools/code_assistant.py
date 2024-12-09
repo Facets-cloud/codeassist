@@ -10,24 +10,42 @@ from swarm import Agent
 from swarm.types import AgentFunction
 
 PROMPT = """
-Explaining Code is another functionality, separate than context. The Coding Assistant is designed to help users explain, write and edit code. It interacts with files in the codebase. 
-When the agent is invoked, first use `read_context_file` to gather information about files and their structure to build context. [Important] Then, use this as primary information to cater to user requests.
-Do not answer general questions and stick to your job. 
-Git operations: For any version control operations, transfer to the `git_assistant`. If user asks something which this agent cannot do send to `transfer_back_to_triage` 
-1. File management: Use `list_files` to offer a list of files or directories when necessary. If there are too many files, ask the user for guidance on where to focus.
-2. Code operations: Based on the user's instructions, perform the following tasks:
-   - Use `read_file` to retrieve content.
-   - Use `write_file` to create or update content.
-   - Use `append_to_file` to add content to an existing file without overwriting.
-   - Use `find_string_in_files` to grep patterns or specific strings and find files of interest.
-   - Use `find_file` to search for files by name or with regex.
-   - When you have context about a file, use `update_context_file` to update the context about what is being done in the file for later use.
-3. Collaborative edits: After suggesting code changes, ask the user if they want the file edited directly. If confirmed, use `write_file` to apply the changes.
+This Coding Assistant is designed to help users with tasks related to explaining, writing, and editing code within their codebase. It offers file management, code operations, and collaborative editing functionalities to assist with specific coding instructions. Here’s a structured approach to its functionality:
+
+Agent Capabilities
+1. Code Explanation and Modification: Provides explanations for code and makes updates based on user instructions.
+2. File Management: Lists, searches, and manages files or directories to focus on specific areas.
+3. Code Operations: Reads, writes, appends, and finds content within files, performing various code modifications.
+4. Shell Command Execution: Executes shell commands and returns their output, allowing users to leverage system commands.
+5. Version Control: Transfers Git-related tasks to the git_assistant.
+6. Task Delegation: Transfers general queries or non-supported requests to transfer_back_to_triage.
+
+This Coding Assistant is equipped with the following tools to support tasks related to code explanation, writing, and editing within the codebase:
+1. Context Management
+read_context_file_as_string: Gathers initial information about files and their structure within the project. This step is essential for building context before handling specific user requests.
+update_context_file: Updates context information about a file after modifications, ensuring consistent tracking of changes for future reference.
+2. File Management
+list_files: Lists all available files or directories within the project. For extensive lists, the agent will prompt the user to specify where to focus.
+find_file: Searches for files by name or pattern, allowing targeted file access.
+3. Code Operations
+read_file: Retrieves and reads the content of a specified file.
+write_file: Creates or updates a file with new or modified content.
+append_to_file: Adds content to an existing file without overwriting existing data. Use this selectively when you are sure that the content has to be appended else read and write
+find_string_in_files: Searches for specific strings or patterns across multiple files to locate files of interest or identify relevant code segments.
+create_directory: Creates a directory if it does not exist.
+run_shell_command: Run any shell command
+4. Collaboration and Confirmation
+Collaborative Editing: The agent will suggest code changes based on user instructions and confirm with the user before applying them. Upon confirmation, write_file will be used to implement changes.
+5. Task Delegation
+Git Operations: All version control-related tasks are delegated to the git_assistant.
+Non-supported Requests: For general inquiries or unsupported tasks, the agent will transfer the request to transfer_back_to_triage for further assistance.
+
 """
 
 
 class CodeAssistant(Agent):
     base_path: ClassVar[str] = ''
+
     def __init__(self):
         super().__init__()
         self.name: str = "Coder"
@@ -36,10 +54,10 @@ class CodeAssistant(Agent):
         self.functions: List[AgentFunction] = [self.list_files,
                                                self.read_file,
                                                self.write_file,
-                                               self.find_string_in_files, self.append_to_file, self.find_file]
+                                               self.find_string_in_files, self.append_to_file, self.find_file,
+                                               self.create_directory, self.run_shell_command]
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
-
 
     def construct_prompt_with_context(self):
         project_context = self.read_context_file_as_string()
@@ -117,13 +135,13 @@ class CodeAssistant(Agent):
         try:
             # Run the grep command
             process = subprocess.run(grep_command, shell=True, check=True, capture_output=True, text=True)
-            
+
             # Process the output and limit to 1000 results
             matched_files = process.stdout.splitlines()[:1000]
-            
+
             for match in matched_files:
                 logging.info(f"String found: {match}")
-                
+
             logging.info(f"Search completed. Matches found: {len(matched_files)}")
             return matched_files
 
@@ -168,3 +186,25 @@ class CodeAssistant(Agent):
 
         logging.info(f"Search completed. Files found: {found_files}")
         return found_files
+
+    def create_directory(self, dir_name: str):
+        """Create a directory if it does not exist."""
+        dir_path = os.path.join(self.base_path, dir_name)
+        try:
+            os.makedirs(dir_path, exist_ok=True)
+            logging.info(f"Directory {dir_path} created successfully.")
+            return "Success!"
+        except Exception as e:
+            logging.error(f"Error creating directory {dir_path}: {e}")
+            return "Error"
+
+    def run_shell_command(self, command: str, directory: str):
+        """Run a shell command in a specified directory and return its output."""
+        directory = os.path.join(self.base_path, directory)
+        try:
+            result = subprocess.run(command, shell=True, cwd=directory, check=True, capture_output=True, text=True)
+            logging.info(f"Command '{command}' executed successfully in {directory}.")
+            return result.stdout
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Error running command '{command}' in {directory}: {e.stderr}")
+            return None

@@ -1,5 +1,5 @@
 from swarm.repl import run_demo_loop
-from all_agents import triage_agent
+from all_agents import triage_agent, k8s_assistant
 from swarm import Swarm
 import json
 import logging
@@ -129,4 +129,4 @@ def run_demo_loop(
         agent = response.agent
 
 if __name__ == "__main__":
-    run_demo_loop(triage_agent)
+    run_demo_loop(k8s_assistant)
