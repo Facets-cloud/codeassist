@@ -2,6 +2,7 @@ from swarm import Agent
 import sys
 
 from tools.code_assistant import CodeAssistant
+from tools.facets_assistant import FacetsAssistant
 from tools.git_assistant import GitAssistant
 from tools.triage_assistant import TriageAssistant
 from tools.context_assistant import ContextAssistant
@@ -10,6 +11,7 @@ git_agent = GitAssistant()
 code_agent = CodeAssistant()
 triage_agent = TriageAssistant()
 context_agent = ContextAssistant()
+facets_agent = FacetsAssistant()
 
 if len(sys.argv) < 2:
     print("Error: Base path not provided. Please provide a base path as the first argument.")
@@ -23,6 +25,7 @@ def initialize_agents(path):
     GitAssistant.base_path = path
     CodeAssistant.base_path = path
     TriageAssistant.base_path = path
+    FacetsAssistant.base_path = path
 
 
 initialize_agents(base_path)

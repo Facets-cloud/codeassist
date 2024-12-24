@@ -1,6 +1,7 @@
 pytest
 openai
 pydantic
+keyboard
 git+https://github.com/openai/swarm.git
 
 # Added for Git Assistant
