@@ -1,5 +1,8 @@
 from swarm.repl import run_demo_loop
 from all_agents import triage_agent
+from all_agents import facets_agent
+from all_agents import code_agent
+from all_agents import git_agent  # Import Git agent
 from swarm import Swarm
 import json
 import logging
@@ -42,7 +45,7 @@ def process_and_print_streaming_response(response):
 
         if "content" in chunk and chunk["content"] is not None:
             if not content and last_sender:
-                print(f"\033[94m{last_sender}:\033[0m", end=" ", flush=True)
+                print(f"\n\033[94m{last_sender}:\033[0m", end=" ", flush=True)
                 last_sender = ""
             print(chunk["content"], end="", flush=True)
             content += chunk["content"]
@@ -62,14 +65,13 @@ def process_and_print_streaming_response(response):
         if "response" in chunk:
             return chunk["response"]
 
-
 def pretty_print_messages(messages) -> None:
     for message in messages:
         if message["role"] != "assistant":
             continue
 
         # print agent name in blue
-        print(f"\033[94m{message['sender']}\033[0m:", end=" ")
+        print(f"\n\033[94m{message['sender']}\033[0m:", end=" ")
 
         # print response, if any
         if message["content"]:
@@ -82,12 +84,11 @@ def pretty_print_messages(messages) -> None:
         for tool_call in tool_calls:
             f = tool_call["function"]
             name, args = f["name"], f["arguments"]
-            arg_str = json.dumps(json.loads(args)).replace(":", "=")
+            arg_str = json.dumps(json.loads(args)).replace(":","=")
             print(f"\033[95m{name}\033[0m({arg_str[1:-1]})")
 
-
 def run_demo_loop(
-        starting_agent, context_variables=None, stream=False, debug=False
+        starting_agent, context_variables=None, stream=True, debug=False
 ) -> None:
     client = Swarm()
     print("Starting Swarm CLI 🐝")
@@ -96,7 +97,7 @@ def run_demo_loop(
     agent = starting_agent
 
     while True:
-        print("\033[90mUser\033[0m: (Enter multiple lines. Press Enter on an empty line to finish)")
+        print("\033[90mUser\033[0m: (Enter multiple lines. Press Enter on an empty line to finish or type 'switch agent' to change agent)")
         user_input_lines = []
 
         # Collect multiple lines of input
@@ -107,6 +108,12 @@ def run_demo_loop(
             user_input_lines.append(line)
 
         user_input = "\n".join(user_input_lines)  # Combine the lines into a single string
+
+        # Check if the user wants to switch agents
+        if user_input.strip().lower() == "switch agent":
+            print("Switching agent...")
+            return  # Exit the loop and return control to the main function
+
         messages.append({"role": "user", "content": user_input})
 
         response = client.run(
@@ -124,8 +131,29 @@ def run_demo_loop(
             pretty_print_messages(response.messages)
 
         messages.extend(response.messages)
-        agent = response.agent
+        agent = response.agent  # Update to the new agent after response
 
 
 if __name__ == "__main__":
-    run_demo_loop(triage_agent)
+    # Prompt user to select an agent
+    agents = {
+        "1": code_agent,
+        "2": triage_agent,
+        "3": facets_agent,
+        "4": git_agent  # Added Git agent to the options
+    }
+
+    while True:
+        print("\nSelect an agent to interact with:")
+        for key in agents.keys():
+            print(f"{key}: {agents[key].name}")
+        print("0: Exit")
+
+        selected_agent = input("Enter the number of the agent you want to use: ")
+        if selected_agent == "0":
+            print("Exiting the agent selection.")
+            break
+        elif selected_agent in agents:
+            run_demo_loop(agents[selected_agent])
+        else:
+            print("Invalid selection! Please try again.")
