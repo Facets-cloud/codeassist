@@ -124,7 +124,7 @@ class CodeAssistant(Agent):
             logging.error(f"Error appending to {file_path}: {e}")
             return "Error"
 
-    def find_string_in_files(self, search_string: str, dir_path: str = None, file_pattern: str = '*'):
+    def find_string_in_files(self, search_string: str, dir_path: str, file_pattern: str = '*'):
         """Search for a string within the directory path, respecting the file pattern and limiting to 1000 results."""
         dir_path = os.path.join(self.base_path, dir_path)
         logging.info(f"Searching for '{search_string}' in files matching '{file_pattern}' under {dir_path}...")

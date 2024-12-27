@@ -60,6 +60,5 @@ triage_agent.functions = [
     transfer_to_git_assistant,
     transfer_to_context_assistant
 ]
-code_agent.functions.extend([transfer_back_to_triage, transfer_to_git_assistant])
-git_agent.functions.extend([transfer_back_to_triage, transfer_to_context_assistant])
+git_agent.functions.extend([transfer_to_context_assistant])
 context_agent.functions.extend([transfer_to_git_assistant])

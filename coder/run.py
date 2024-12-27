@@ -6,34 +6,45 @@ from all_agents import git_agent  # Import Git agent
 from swarm import Swarm
 import json
 import logging
+import time
+import sys
 
 log_file = 'app.log'  # Specify your log file path
 
-# File handler
-file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+def setup_logging():
+    # File handler
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
-# Get the root logger, set level, clear existing handlers, and add both handlers
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)  # Set root logger level to DEBUG to capture all messages
-logger.handlers.clear()  # Clear any existing handlers
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+    # Get the root logger, set level, clear existing handlers, and add both handlers
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)  # Set root logger level to DEBUG to capture all messages
+    logger.handlers.clear()  # Clear any existing handlers
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+    
+    return logger  # Return the logger
+
+def load_parameters():
+    with open('parameters.json') as f:
+        parameters = json.load(f)
+    return parameters.get('model', 'gpt-4o-mini')
+
+# Setup logging
+logger = setup_logging()  # Store the logger instance
 
 # Log the model being used
-with open('parameters.json') as f:
-    parameters = json.load(f)
-    model_override = parameters.get('model', 'gpt-4o-mini')
+model_override = load_parameters()
 logger.info(f'Model being used: {model_override}')
 
 # Print the model being used
-print(f'Model being used: {model_override}')
+print(f'\033[92mModel being used: {model_override}\033[0m')
 
 def process_and_print_streaming_response(response):
     content = ""
@@ -84,14 +95,14 @@ def pretty_print_messages(messages) -> None:
         for tool_call in tool_calls:
             f = tool_call["function"]
             name, args = f["name"], f["arguments"]
-            arg_str = json.dumps(json.loads(args)).replace(":","=")
+            arg_str = json.dumps(json.loads(args)).replace(":", "=")
             print(f"\033[95m{name}\033[0m({arg_str[1:-1]})")
 
 def run_demo_loop(
         starting_agent, context_variables=None, stream=True, debug=False
 ) -> None:
     client = Swarm()
-    print("Starting Swarm CLI 🐝")
+    print("\033[92mStarting Swarm CLI 🐝\033[0m")
 
     messages = []
     agent = starting_agent
@@ -111,10 +122,16 @@ def run_demo_loop(
 
         # Check if the user wants to switch agents
         if user_input.strip().lower() == "switch agent":
-            print("Switching agent...")
+            print("\033[93mSwitching agent...\033[0m")
             return  # Exit the loop and return control to the main function
 
         messages.append({"role": "user", "content": user_input})
+
+        print("\033[96mWaiting for response...\033[0m", end="", flush=True)
+        for _ in range(3):  # Simple loading indicator
+            print(".", end="", flush=True)
+            time.sleep(0.5)
+        print()  # New line after loading indicator
 
         response = client.run(
             agent=agent,
@@ -143,17 +160,18 @@ if __name__ == "__main__":
         "4": git_agent  # Added Git agent to the options
     }
 
+    print("\033[1m\033[92mWelcome to the Swarm CLI!\033[0m\n")
     while True:
-        print("\nSelect an agent to interact with:")
+        print("\033[1mSelect an agent to interact with:\033[0m")
         for key in agents.keys():
-            print(f"{key}: {agents[key].name}")
-        print("0: Exit")
+            print(f"\033[93m{key}:\033[0m {agents[key].name}")
+        print("\033[90m0: Exit\033[0m")
 
         selected_agent = input("Enter the number of the agent you want to use: ")
         if selected_agent == "0":
-            print("Exiting the agent selection.")
+            print("\033[92mExiting the agent selection.\033[0m")
             break
         elif selected_agent in agents:
             run_demo_loop(agents[selected_agent])
         else:
-            print("Invalid selection! Please try again.")
+            print("\033[91mInvalid selection! Please try again.\033[0m")
