@@ -5,3 +5,5 @@ lib/
 __pycache__
 pyvenv.cfg
 app.log
+.aider*
+.env

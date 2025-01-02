@@ -76,6 +76,7 @@ def process_and_print_streaming_response(response):
         if "response" in chunk:
             return chunk["response"]
 
+
 def pretty_print_messages(messages) -> None:
     for message in messages:
         if message["role"] != "assistant":
@@ -98,6 +99,7 @@ def pretty_print_messages(messages) -> None:
             arg_str = json.dumps(json.loads(args)).replace(":", "=")
             print(f"\033[95m{name}\033[0m({arg_str[1:-1]})")
 
+
 def run_demo_loop(
         starting_agent, context_variables=None, stream=True, debug=False
 ) -> None:
@@ -108,7 +110,7 @@ def run_demo_loop(
     agent = starting_agent
 
     while True:
-        print("\033[90mUser\033[0m: (Enter multiple lines. Press Enter on an empty line to finish or type 'switch agent' to change agent)")
+        print("\033[90mUser\033[0m: (Enter multiple lines. Press Enter on an empty line to finish or type \"/switch agent\" to change agent or \"/\" to change agents using aliases)")
         user_input_lines = []
 
         # Collect multiple lines of input
@@ -124,6 +126,16 @@ def run_demo_loop(
         if user_input.strip().lower() == "switch agent":
             print("\033[93mSwitching agent...\033[0m")
             return  # Exit the loop and return control to the main function
+
+        # Check if the user wants to use an alias
+        if user_input.startswith("/"):
+            alias = user_input.replace("/", "").strip()
+            if alias in agent_aliases:
+                print(f"\033[93mSwitching to agent: {alias}\033[0m")
+                agent = agent_aliases[alias]
+                continue
+            else:
+                print("\033[91mInvalid alias! Please try again.\033[0m")
 
         messages.append({"role": "user", "content": user_input})
 
@@ -160,18 +172,28 @@ if __name__ == "__main__":
         "4": git_agent  # Added Git agent to the options
     }
 
+    agent_aliases = {
+        'code': code_agent,
+        'triage': triage_agent,
+        'facets': facets_agent,
+        'git': git_agent
+    }
+
     print("\033[1m\033[92mWelcome to the Swarm CLI!\033[0m\n")
     while True:
         print("\033[1mSelect an agent to interact with:\033[0m")
         for key in agents.keys():
-            print(f"\033[93m{key}:\033[0m {agents[key].name}")
+          alias = [k for k, v in agent_aliases.items() if v == agents[key]]
+          print(f"\033[93m{key}:\033[0m {agents[key].name} (/{', '.join(alias)})" if alias else f"\033[93m{key}:\033[0m {agents[key].name}")
         print("\033[90m0: Exit\033[0m")
 
-        selected_agent = input("Enter the number of the agent you want to use: ")
+        selected_agent = input("Enter the number of the agent you want to use or type an alias: ")
         if selected_agent == "0":
             print("\033[92mExiting the agent selection.\033[0m")
             break
         elif selected_agent in agents:
             run_demo_loop(agents[selected_agent])
+        elif selected_agent in agent_aliases:
+            run_demo_loop(agent_aliases[selected_agent])
         else:
             print("\033[91mInvalid selection! Please try again.\033[0m")

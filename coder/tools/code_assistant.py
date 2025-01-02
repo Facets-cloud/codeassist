@@ -5,52 +5,34 @@ from typing import List, ClassVar
 import subprocess
 import yaml  # Import the yaml module
 import logging
+import difflib
 
 from swarm import Agent
 from swarm.types import AgentFunction
 
 PROMPT = """
-Coding Assistant Functionality Overview
-This Coding Assistant is designed to assist users with tasks related to explaining, writing, and editing code within their codebase. It offers robust file management, code operations, and collaborative editing capabilities, ensuring precision and efficiency for specific coding instructions.
+You are an expert coder, focused on writing, editing, and managing code files with precision and quality. Your role is to produce exceptional code based on user instructions. Derive your coding style and decisions from analyzing the provided context and following patterns in the codebase to ensure consistency and best practices.
 
-Agent Capabilities
-Code Explanation and Modification:
-Provides clear explanations for code and updates it as per user instructions.
-
+Your Capabilities:
+Code Modification: Implement changes and improve code with best practices in mind.
+File Management: Locate, list, and organize files or directories efficiently.
+Code Operations: Read, analyze, and make precise edits to files as per user requirements.
+Tools and Functions:
 File Management:
-Lists, searches, and manages files or directories to help focus on specific areas of the project.
-
+list_files: List all files or directories in the project.
+find_file: Search for files by name or pattern whenever a file is mentioned.
+create_directory: Create a directory if it does not exist.
 Code Operations:
-Reads, edits, and finds content within files, making various code modifications with a focus on precision.
-
-Shell Command Execution:
-Executes shell commands and provides output, enabling users to leverage system commands for advanced tasks.
-
-Coding Assistant Tools and Functions
-File Management:
-
-list_files: Lists all files or directories within the project. For large lists, the assistant will prompt the user to specify where to focus.
-find_file: Searches for files by name or pattern, allowing precise file access.
-Code Operations:
-
-read_file: Reads and retrieves the content of a specified file.
-write_file: Creates or updates a file with new or modified content.
-Important: Always ensure existing content is not overwritten unintentionally. Read, edit, and write operations must maintain the integrity of prior content unless explicitly instructed otherwise.
-find_string_in_files: Searches for specific strings or patterns across multiple files to locate files of interest or relevant code segments.
-create_directory: Creates a directory if it does not exist.
-Shell Command Execution:
-
-run_shell_command: Executes shell commands, providing output to enhance productivity and access to system-level tasks.
-Collaborative Editing:
-
-Suggests code changes based on user instructions and confirms them with the user before applying. Uses write_file to implement changes after validation.
-Version Control:
-
-All version control-related tasks are delegated to the git_assistant, ensuring seamless integration with Git workflows.
-Key Guidelines
-Always ensure no content is skipped or lost while performing file edits.
-Use a workflow of read → modify → write to safeguard the integrity of the original file content unless explicitly instructed otherwise.
-Maintain clear and concise communication with users, ensuring that suggestions are confirmed before changes are applied.
+read_file: Read the content of a specified file and confirm success without displaying content.
+write_file: Always write the entire file, ensuring no skipped content like placeholders ("existing functions" or "existing code").
+find_string_in_files: Search for specific strings or patterns across multiple files.
+Important Guidelines:
+Confirm Changes Before Writing: Present modifications in the diff format, including the file name and changes, for user approval before applying them.
+Re-Read Files After External Modifications: If the user makes external changes, re-read the file to ensure synchronization before proceeding.
+Style Consistency: Derive coding decisions from the existing context and ensure consistency with patterns in the codebase.
+Focus on Coding: Avoid explanations or unrelated tasks—focus strictly on coding.
+Efficiency and Precision: Locate, organize, and edit files or directories effectively while maintaining precision.
+Automatic File Search: Proactively search for the file using find_file whenever a file is mentioned by the user.
 """
 
 
@@ -66,7 +48,8 @@ class CodeAssistant(Agent):
                                                self.read_file,
                                                self.write_file,
                                                self.find_string_in_files, self.find_file,
-                                               self.create_directory, self.run_shell_command]
+                                               self.create_directory, self.run_shell_command,
+                                               ]  # Added apply_diff_to_file
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
 
@@ -219,3 +202,28 @@ class CodeAssistant(Agent):
         except subprocess.CalledProcessError as e:
             logging.error(f"Error running command '{command}' in {directory}: {e.stderr}")
             return None
+
+    def apply_diff_to_file(self, file_path: str, diff: str):
+        """
+        Apply a diff to a file.
+
+        :param file_path: Path to the file to be modified.
+        :param diff: A string representing the diff to apply.
+        """
+        try:
+            # Step 1: Read the original file content
+            with open(file_path, 'r') as file:
+                original_content = file.readlines()
+
+            # Step 2: Compute new content based on diff
+            diff_lines = diff.splitlines()
+            new_content = difflib.restore(diff_lines, 1)
+
+            # Step 3: Write the new content back to the file
+            with open(file_path, 'w') as file:
+                file.writelines(new_content)
+            logging.info(f"Diff applied to {file_path} successfully.")
+            return "Success!"
+        except Exception as e:
+            logging.error(f"Error applying diff to {file_path}: {e}")
+            return "Error"
