@@ -35,7 +35,6 @@ Efficiency and Precision: Locate, organize, and edit files or directories effect
 Automatic File Search: Proactively search for the file using find_file whenever a file is mentioned by the user.
 """
 
-
 class CodeAssistant(Agent):
     base_path: ClassVar[str] = ''
 
@@ -205,25 +204,30 @@ class CodeAssistant(Agent):
 
     def apply_diff_to_file(self, file_path: str, diff: str):
         """
-        Apply a diff to a file.
+        Apply multiple diffs to a file.
 
         :param file_path: Path to the file to be modified.
-        :param diff: A string representing the diff to apply.
+        :param diff: A string representing the diffs to apply.
         """
         try:
             # Step 1: Read the original file content
             with open(file_path, 'r') as file:
                 original_content = file.readlines()
 
-            # Step 2: Compute new content based on diff
-            diff_lines = diff.splitlines()
-            new_content = difflib.restore(diff_lines, 1)
+            # Step 2: Split the diff input into multiple diffs
+            diffs = diff.strip().split('\n\n')  # Assuming a double new line separates diffs
 
-            # Step 3: Write the new content back to the file
+            # Step 3: Apply each diff in sequence
+            for d in diffs:
+                diff_lines = d.splitlines()
+                if diff_lines:  # Check if there are lines to process
+                    original_content = list(difflib.restore(diff_lines, 1))
+
+            # Step 4: Write the final content back to the file
             with open(file_path, 'w') as file:
-                file.writelines(new_content)
-            logging.info(f"Diff applied to {file_path} successfully.")
+                file.writelines(original_content)
+            logging.info(f"Multiple diffs applied to {file_path} successfully.")
             return "Success!"
         except Exception as e:
-            logging.error(f"Error applying diff to {file_path}: {e}")
+            logging.error(f"Error applying diffs to {file_path}: {e}")
             return "Error"
