@@ -46,6 +46,12 @@ Upon starting, follow the on-screen prompts:
 
 All actions and interactions are logged to `app.log`. This file is generated in the application directory and is useful for debugging and tracking activity.
 
+## Environment Variables
+
+This application uses the following environment variable for configuration:
+
+- `OPENAI_API_KEY`: Your API key for accessing OpenAI services. Ensure this is set before running the application.
+
 ## Contributing
 
 Feel free to submit issues, request features, or contribute to the codebase by submitting a pull request.

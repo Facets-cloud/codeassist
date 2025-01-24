@@ -35,12 +35,14 @@ class CodeAssistant(Agent):
         if file_name_with_path.startswith("../"):
             logging.error(f"Invalid file path: {file_name_with_path}. Path cannot start with '../'.")
             return False
+        return True
 
     def _validate_directory_path(self, dir_path: str):
         """Validate that the directory path does not start with '../'."""
         if dir_path.startswith("../"):
             logging.error(f"Invalid directory path: {dir_path}. Path cannot start with '../'.")
             return False
+        return True
     
     def list_files(self, directory: str, gitignore_path: str = None):
         """List files in a given directory relative to the base path, respecting the specified .gitignore file."""
@@ -62,10 +64,13 @@ class CodeAssistant(Agent):
     
     def read_file(self, file_name_with_path: str):
         """Read the content of a specified file, ensuring the path is valid and not starting with '../'."""
+        file_path = os.path.join(self.base_path, file_name_with_path)
+
+        logging.info(f"Content of {file_path} ")
+
         if not self._validate_file_path(file_name_with_path):
             return "Invalid file path. Path cannot start with '../'."
         
-        file_path = os.path.join(self.base_path, file_name_with_path)
         try:
             with open(file_path, 'r') as file:
                 content = file.read()
