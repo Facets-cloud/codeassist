@@ -1,3 +1,0 @@
-This is a python project using swarm project located at https://github.com/openai/swarm.git
-
-This is developing an AI agent to write code
