@@ -37,7 +37,7 @@ Error Reporting: Highlights issues with user instructions or JSON generation and
 
 class FacetsAssistant(CodeAssistant):
     def __init__(self):
-        super().__init__()
+        super().__init__("Facets Assistant")
         self.name: str = "Facets Assistant"
         self.model: str = "gpt-4o"
         self.instructions = PROMPT

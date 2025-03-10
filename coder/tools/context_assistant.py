@@ -7,7 +7,7 @@ from tools.code_assistant import CodeAssistant
 class ContextAssistant(CodeAssistant):
     
     def __init__(self):
-        super().__init__()
+        super().__init__("Context Assistant")
         self.name: str = "Context Assistant"
         self.model: str = "gpt-4o"
         # Read instructions from the Markdown file

@@ -6,12 +6,34 @@ from tools.facets_assistant import FacetsAssistant
 from tools.git_assistant import GitAssistant
 from tools.triage_assistant import TriageAssistant
 from tools.context_assistant import ContextAssistant
+from tools.cliassistant import CLIAssistant
 
 git_agent = GitAssistant()
-code_agent = CodeAssistant()
+code_agent = CodeAssistant('Coder')
+swagger_agent = CodeAssistant('Swagger', 'tools/code_swagger_gen.md')
+swagger_agent_2 = CodeAssistant('Permission Agent', 'tools/permission_agent.md')
+
+architect = CodeAssistant('Exlpainer', 'tools/code_explainer.md')
 triage_agent = TriageAssistant()
 context_agent = ContextAssistant()
 facets_agent = FacetsAssistant()
+cli_agent = CLIAssistant()
+
+
+def transfer_to_permission_agent():
+    """Transfer the conversation to the Permission agent."""
+    return swagger_agent_2
+
+
+swagger_agent.functions.extend([transfer_to_permission_agent])
+
+
+def transfer_to_apidoc_agent():
+    """Transfer the conversation to the APIDocAgent agent."""
+    return swagger_agent
+
+
+swagger_agent_2.functions.extend([transfer_to_apidoc_agent])
 
 if len(sys.argv) < 2:
     print("Error: Base path not provided. Please provide a base path as the first argument.")

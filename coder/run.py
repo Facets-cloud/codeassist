@@ -1,16 +1,17 @@
 from swarm.repl import run_demo_loop
-from all_agents import triage_agent
-from all_agents import facets_agent
-from all_agents import code_agent
-from all_agents import git_agent  # Import Git agent
+from all_agents import *  # Import Git agent
+
 from swarm import Swarm
 import json
 import logging
 import time
 import sys
 
-log_file = 'app.log'  # Specify your log file path
+from tools.facets_modules.module_writers import writer_agent
+from tools.mongo_assistant import MongoAssistant
 
+log_file = 'app.log'  # Specify your log file path
+mongo_agent = MongoAssistant()
 def setup_logging():
     # File handler
     file_handler = logging.FileHandler(log_file)
@@ -169,14 +170,22 @@ if __name__ == "__main__":
         "1": code_agent,
         "2": triage_agent,
         "3": facets_agent,
-        "4": git_agent  # Added Git agent to the options
+        "4": git_agent,  # Added Git agent to the options
+        "5": cli_agent,
+        "6": swagger_agent,
+        "7": architect,
+        "8": mongo_agent,
+        "9": writer_agent
     }
 
     agent_aliases = {
         'code': code_agent,
+        'explain': architect,
         'triage': triage_agent,
         'facets': facets_agent,
-        'git': git_agent
+        'git': git_agent,
+        'cli': cli_agent,
+        'mongo': mongo_agent
     }
 
     print("\033[1m\033[92mWelcome to the Swarm CLI!\033[0m\n")

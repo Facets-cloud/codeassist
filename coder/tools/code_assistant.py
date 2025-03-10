@@ -10,15 +10,16 @@ from unidiff import PatchSet
 from swarm import Agent
 from swarm.types import AgentFunction
 
+
 class CodeAssistant(Agent):
     base_path: ClassVar[str] = ''
-    
-    def __init__(self):
+
+    def __init__(self, name, path='tools/code_assistant.md'):
         super().__init__()
-        self.name: str = "Coder"
+        self.name: str = name
         self.model: str = "gpt-4o"
         # Read instructions from the Markdown file
-        with open('tools/code_assistant.md', 'r') as file:
+        with open(path, 'r') as file:
             self.instructions = file.read()
         self.functions: List[AgentFunction] = [self.list_files,
                                                self.read_file,
@@ -26,7 +27,7 @@ class CodeAssistant(Agent):
                                                self.find_string_in_files, self.find_file,
                                                self.create_directory,
                                                self.run_shell_command
-                                               ]  
+                                               ]
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
 
@@ -43,7 +44,7 @@ class CodeAssistant(Agent):
             logging.error(f"Invalid directory path: {dir_path}. Path cannot start with '../'.")
             return False
         return True
-    
+
     def list_files(self, directory: str, gitignore_path: str = None):
         """List files in a given directory relative to the base path, respecting the specified .gitignore file."""
         dir_path = os.path.join(self.base_path, directory)
@@ -54,14 +55,14 @@ class CodeAssistant(Agent):
         if gitignore_path and os.path.exists(gitignore_path):
             with open(gitignore_path, 'r') as file:
                 ignore_patterns = [line.strip() for line in file if line.strip() and not line.startswith('#')]
-        
+
         # List all files and filter out ignored ones
         files = os.listdir(dir_path)
         filtered_files = [f for f in files if not any(fnmatch.fnmatch(f, pattern) for pattern in ignore_patterns)]
-        
+
         logging.info(f"Files in {dir_path} (filtered): {filtered_files}")
         return filtered_files
-    
+
     def read_file(self, file_name_with_path: str):
         """Read the content of a specified file, ensuring the path is valid and not starting with '../'."""
         file_path = os.path.join(self.base_path, file_name_with_path)
@@ -70,7 +71,7 @@ class CodeAssistant(Agent):
 
         if not self._validate_file_path(file_name_with_path):
             return "Invalid file path. Path cannot start with '../'."
-        
+
         try:
             with open(file_path, 'r') as file:
                 content = file.read()
@@ -82,12 +83,12 @@ class CodeAssistant(Agent):
         except Exception as e:
             logging.error(f"Error reading {file_path}: {e}")
             return str(e)
-    
+
     def write_file(self, file_name_with_path: str, content: str):
-        """Write specified content to a file, ensuring the path is valid and not starting with '../'."""
+        """Write specified content to a file (Always give complete content do not skip any line), ensuring the path is valid and not starting with '../'."""
         if not self._validate_file_path(file_name_with_path):
             return "Invalid file path. Path cannot start with '../'."
-        
+
         file_path = os.path.join(self.base_path, file_name_with_path)
         try:
             with open(file_path, 'w') as file:
@@ -145,17 +146,17 @@ class CodeAssistant(Agent):
         """Find a file by name or regex pattern within the specified directory, respecting the specified .gitignore file."""
         if not self._validate_directory_path(dir_path):
             return "Invalid directory path. Path cannot start with '../'."
-        
+
         dir_path = os.path.join(self.base_path, dir_path)
         logging.info(f"Searching for file pattern '{file_pattern}' under {dir_path}...")
         found_files = []
-        
+
         # Read and parse .gitignore
         ignore_patterns = []
         if gitignore_path and os.path.exists(gitignore_path):
             with open(gitignore_path, 'r') as file:
                 ignore_patterns = [line.strip() for line in file if line.strip() and not line.startswith('#')]
-        
+
         for root, _, files in os.walk(dir_path):
             for file in files:
                 file_path = os.path.join(root, file)
@@ -171,10 +172,10 @@ class CodeAssistant(Agent):
                     if fnmatch.fnmatch(file, file_pattern):
                         found_files.append(file_path)
                         logging.info(f"File found: {file_path}")
-        
+
         logging.info(f"Search completed. Files found: {found_files}")
         return found_files
-    
+
     def create_directory(self, dir_name: str):
         """Create a directory if it does not exist."""
         dir_path = os.path.join(self.base_path, dir_name)
@@ -185,28 +186,32 @@ class CodeAssistant(Agent):
         except Exception as e:
             logging.error(f"Error creating directory {dir_path}: {e}")
             return str(e)
-    
+
     def run_shell_command(self, command: str, directory: str):
-        """Run a shell command in a specified directory and return its output."""
+        """Run a shell command in a specified directory, print its output, and return it."""
         directory = os.path.join(self.base_path, directory)
         try:
-            result = subprocess.run(command, shell=True, cwd=directory, check=True, capture_output=True, text=True)
+            result = subprocess.run(
+                command, shell=True, cwd=directory, check=True,
+                capture_output=True, text=True
+            )
             logging.info(f"Command '{command}' executed successfully in {directory}.")
+            print(result.stdout)  # Print the result of the command
             return result.stdout
         except subprocess.CalledProcessError as e:
-            logging.error(f"Error running command '{command}' in {directory}: {e.stderr}")
-            return str(e.stderr)
-    
+            logging.error(f"Error running command '{command}' in {directory}: {e.stderr} {e.stdout}")
+            return str(e.stdout) + "ERROR: " + str(e.stderr)
+
     def apply_diff_to_file(self, file_path: str, diff: str):
         """Apply unified diff to a file using unidiff."""
         try:
             # Read the original file content
             with open(file_path, 'r') as file:
                 original_content = file.readlines()
-            
+
             # Create a patch set
             patch = PatchSet(diff)
-            
+
             # Apply the patch
             for p in patch:
                 for h in p:
@@ -215,11 +220,11 @@ class CodeAssistant(Agent):
                             original_content.insert(line.target_line_no - 1, line.value)
                         elif line.is_removed:
                             del original_content[line.source_line_no - 1]
-            
+
             # Write the modified content back to the file
             with open(file_path, 'w') as file:
                 file.writelines(original_content)
-            
+
             logging.info(f"Multiple diffs applied to {file_path} successfully.")
             return "Success!"
         except Exception as e:

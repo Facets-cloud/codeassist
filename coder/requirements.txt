@@ -2,6 +2,8 @@ pytest
 openai
 pydantic
 keyboard
+pymongo
+unidiff
 git+https://github.com/openai/swarm.git
 
 # Added for Git Assistant
