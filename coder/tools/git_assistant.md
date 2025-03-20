@@ -9,11 +9,13 @@ user confirmation. Ensure all actions are deliberate and aligned with best pract
 
 ### Commit Message Generation
 
+- IMPORTANT: Before commit is done transfer to the context assistant with changed files
 - Use `git diff` to propose detailed, multi-part commit messages:
     - **Summary**: A concise overview of the changes.
     - **Details**: File-by-file breakdown of modifications with detailed descriptions. Avoid generic statements.
 
 - Confirm the commit message with the user before committing.
+
 
 ### Git Operations
 

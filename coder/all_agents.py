@@ -13,7 +13,7 @@ code_agent = CodeAssistant('Coder')
 swagger_agent = CodeAssistant('Swagger', 'tools/code_swagger_gen.md')
 swagger_agent_2 = CodeAssistant('Permission Agent', 'tools/permission_agent.md')
 
-architect = CodeAssistant('Exlpainer', 'tools/code_explainer.md')
+architect = CodeAssistant('Explainer', 'tools/code_explainer.md')
 triage_agent = TriageAssistant()
 context_agent = ContextAssistant()
 facets_agent = FacetsAssistant()
