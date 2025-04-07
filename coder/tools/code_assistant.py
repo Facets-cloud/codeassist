@@ -6,6 +6,8 @@ import subprocess
 import yaml  # Import the yaml module
 import logging
 from unidiff import PatchSet
+import requests  # Import requests to handle HTTP requests
+from bs4 import BeautifulSoup  # Import BeautifulSoup to parse HTML
 
 from swarm import Agent
 from swarm.types import AgentFunction
@@ -26,7 +28,8 @@ class CodeAssistant(Agent):
                                                self.write_file,
                                                self.find_string_in_files, self.find_file,
                                                self.create_directory,
-                                               self.run_shell_command
+                                               self.run_shell_command,
+                                               self.browse_web
                                                ]
         self.tool_choice: str = None
         self.parallel_tool_calls: bool = True
@@ -229,4 +232,19 @@ class CodeAssistant(Agent):
             return "Success!"
         except Exception as e:
             logging.error(f"Error applying diffs to {file_path}: {e}")
+            return str(e)
+
+    def browse_web(self, url: str) -> str:
+        """Use to get any content over http Fetch and return the cleaned text content of a webpage by URL."""
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an error for bad responses
+            # Parse the HTML content
+            soup = BeautifulSoup(response.text, 'html.parser')
+            # Extract text from the HTML
+            text_content = soup.get_text(separator=" ", strip=True)
+            logging.info(f"Fetched the web content from {url}: {text_content[:30]}...")
+            return text_content
+        except requests.RequestException as e:
+            logging.error(f"Error fetching URL {url}: {e}")
             return str(e)

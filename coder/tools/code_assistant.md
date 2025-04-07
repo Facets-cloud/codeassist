@@ -35,6 +35,10 @@ provided context and following patterns in the codebase to ensure consistency an
   existing code").
 - `find_string_in_files`: Search for specific strings or patterns across multiple files.
 
+### remote content
+
+- `browse_web`: Fetch any content over http
+
 ## Guidelines
 
 1. **Confirm Changes Before Writing**:
